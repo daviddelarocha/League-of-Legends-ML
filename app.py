@@ -2,7 +2,7 @@ import time
 import matplotlib.pyplot as plt
 import streamlit as st
 from src.constants import REGION, GAME_NAME, TAG_LINE
-from src import api, model
+from src import api, model, current_game
 
 # Load the model
 PUUID = api.get_player_uuid(REGION, GAME_NAME, TAG_LINE)
@@ -30,15 +30,11 @@ def main():
     
     while True:
         # Retrieve information
-        df_info = api.extract_info(
-            PUUID,
-            api.get_matches_info(api.get_last_matches(PUUID, 1)) 
-        )
-        
-        # Clean data
-        X = model.clean_data(df_info)
-        Y = X['win'].values
-        X = X.drop(columns=['win'])
+        df_info = current_game.fetch_data()
+        if not df_info:
+            game_duration_placeholder.subheader(f"No active game")
+            continue
+        X = df_info.copy()
 
         # Make prediction
         prob_pred = model.predict(MODEL, X)
@@ -85,7 +81,7 @@ def main():
         graph_placeholder.pyplot(fig)
 
         # Delay
-        time.sleep(5)
+        time.sleep(10)
 
 if __name__ == "__main__":
     main()

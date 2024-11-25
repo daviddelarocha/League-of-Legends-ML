@@ -1,11 +1,12 @@
 import joblib
 
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
 
-from src.constants import ROLES, UNWANTED_COLUMNS
+from src.constants import ROLES, FINAL_COLUMNS
 
 
 def clean_data(df_info: pd.DataFrame) -> pd.DataFrame:
@@ -20,16 +21,21 @@ def clean_data(df_info: pd.DataFrame) -> pd.DataFrame:
     ## set column 'win' to numerical
     data['win'] = data['win'].astype(int)
 
+    ## add all minions
+    data['totalMinionsKilled'] = data['totalMinionsKilled'] + data['neutralMinionsKilled']
+
     ## remove unwanted columns
-    data = data.drop(columns=UNWANTED_COLUMNS)
+    data = data[FINAL_COLUMNS]
 
     ## drop empty values
     data = data.dropna()
 
+    print(data)
+
     return data
 
 
-def train_model(data):
+def train_model(data: pd.DataFrame):
     X = data.drop(columns=['win'])
     Y = data['win']
 
@@ -43,6 +49,8 @@ def train_model(data):
     ## Evaluate
     evaluate_model(model, X_test, y_test)
 
+    return model
+
 
 def evaluate_model(model, X_test, y_test):
     ## Make a prediction
@@ -53,6 +61,10 @@ def evaluate_model(model, X_test, y_test):
     print("Accurary:", accuracy_score(y_test, y_pred))
     print("ROC-AUC", roc_auc_score(y_test, y_pred_proba))
     print("\nClassification report\n", classification_report(y_test, y_pred))
+
+
+def save_model(model, puuid, model_type="random_forest"):
+    joblib.dump(model, f'data/{model_type}_{puuid}.pkl')
 
 
 def load_model(puuid, model_type="random_forest"):

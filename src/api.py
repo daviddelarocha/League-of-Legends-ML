@@ -3,7 +3,7 @@ import time
 import requests
 import pandas as pd
 
-from src.constants import API_KEY, REGION, INFO_KEYS, PARTICIPANT_KEYS, TEAM_KEYS, OBJECTIVES_KEYS
+from src.constants import API_KEY, REGION, INFO_KEYS, PARTICIPANT_KEYS, TEAM_KEYS, OBJECTIVES_KEYS, DELAY_API
 
 
 def call_api(region: str, url: str, params:dict = {}) -> dict | None:
@@ -36,7 +36,7 @@ def get_matches_info(matches_ids: list[str]) -> list[dict]:
     for match_id in matches_ids:
         url = f"/lol/match/v5/matches/{match_id}"
         matches_info.append(call_api(REGION, url))
-        time.sleep(1)
+        time.sleep(DELAY_API)
 
     return matches_info
 
@@ -69,3 +69,14 @@ def extract_info(puuid: str, matches_info: list[dict]) -> pd.DataFrame:
     df_matches_info = pd.DataFrame(filtered_info, columns=INFO_KEYS+PARTICIPANT_KEYS+TEAM_KEYS+OBJECTIVES_KEYS)
 
     return df_matches_info
+
+
+def get_current_game() -> dict:
+    url = "https://127.0.0.1:2999/liveclientdata/allgamedata"
+
+    res = requests.get(url, verify=False)
+
+    if res.status_code == 200:
+        return res.json()
+    
+    raise Exception(res.text)
