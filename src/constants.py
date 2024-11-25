@@ -19,6 +19,7 @@ PARTICIPANT_KEYS = [
     'champExperience',
     'champLevel',
     'championId',
+    'championName',
     'deaths',
     'goldEarned',
     'kills',
@@ -44,6 +45,11 @@ OBJECTIVES_KEYS = [
     'tower'
 ]
 
+UNWANTED_COLUMNS = [
+    'gameMode',
+    'championName'
+]
+
 ROLES = {
     "BOTTOM": 1,
     "UTILITY": 2,
@@ -51,3 +57,5 @@ ROLES = {
     "JUNGLE": 4,
     "TOP": 5
 }
+
+ROLES_T = {val: key for key, val in ROLES.items()}

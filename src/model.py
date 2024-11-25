@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
 
-from src.constants import ROLES
+from src.constants import ROLES, UNWANTED_COLUMNS
 
 
 def clean_data(df_info: pd.DataFrame) -> pd.DataFrame:
@@ -13,13 +13,15 @@ def clean_data(df_info: pd.DataFrame) -> pd.DataFrame:
 
     ## filter game mode
     data = data[data['gameMode'] == 'CLASSIC']
-    data = data.drop(columns=["gameMode"])
 
     ## replace teamPosition to numerical
     data['teamPosition'] = data['teamPosition'].replace(ROLES)
 
     ## set column 'win' to numerical
     data['win'] = data['win'].astype(int)
+
+    ## remove unwanted columns
+    data = data.drop(columns=UNWANTED_COLUMNS)
 
     ## drop empty values
     data = data.dropna()

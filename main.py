@@ -14,7 +14,7 @@ def main():
         ## get info
         df_info = api.extract_info(
             PUUID,
-            api.get_matches_info(api.get_last_matches(PUUID, 2)) 
+            api.get_matches_info(api.get_last_matches(PUUID, 1)) 
         )
         ## clean data
         X = model.clean_data(df_info)
@@ -28,7 +28,7 @@ def main():
         ## visualize
         print("\nWinning probability: ", prob_pred)
         print("\nVictory: ", Y)
-        print("\nStats: \n", X)
+        print("\nStats: \n", X.T)
 
         ## delay
         time.sleep(5)
